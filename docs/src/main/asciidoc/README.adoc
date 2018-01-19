@@ -1,0 +1,11 @@
+image::https://circleci.com/gh/spring-cloud/spring-cloud-commons.svg?style=svg[Build Status, link=https://circleci.com/gh/spring-cloud/spring-cloud-commons]
+
+include::intro.adoc[]
+
+== Building
+
+include::https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/docs/src/main/asciidoc/building.adoc[]
+
+== Contributing
+
+include::https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/docs/src/main/asciidoc/contributing.adoc[]
