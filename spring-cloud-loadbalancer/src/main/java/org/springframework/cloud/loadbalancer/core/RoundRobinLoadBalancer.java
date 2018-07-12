@@ -45,7 +45,7 @@ public class RoundRobinLoadBalancer implements LoadBalancer<ServiceInstance>, Re
 	}
 
 	@Override
-	public LoadBalancer.Response<ServiceInstance> choose(LoadBalancer.Request request) {
+	public LoadBalancer.Response<ServiceInstance> choose(Request request) {
 		String serviceId = clientFactory.getName(this.environment);
 		ServiceInstanceSupplier supplier = clientFactory.getInstance(serviceId, ServiceInstanceSupplier.class);
 		List<ServiceInstance> instances = supplier.get();
@@ -64,8 +64,22 @@ public class RoundRobinLoadBalancer implements LoadBalancer<ServiceInstance>, Re
 	}
 
 	@Override
-	public Mono<ReactiveLoadBalancer.Response<ServiceInstance>> choose(ReactiveLoadBalancer.Request request) {
-		return null;
+	public Mono<ReactiveLoadBalancer.Response<ServiceInstance>> select(Request request) {
+		String serviceId = clientFactory.getName(this.environment);
+		ServiceInstanceSupplier supplier = clientFactory.getInstance(serviceId, ServiceInstanceSupplier.class);
+		List<ServiceInstance> instances = supplier.get();
+		//TODO: enforce order?
+
+		if (isEmpty(instances)) {
+			log.warn("No servers available for service: " + serviceId);
+			return Mono.empty();
+		}
+
+		int nextServerIndex = incrementAndGetModulo(instances.size());
+
+		ServiceInstance instance = instances.get(nextServerIndex);
+
+		return Mono.just(new DefaultReactiveResponse(instance));
 	}
 
 	/**

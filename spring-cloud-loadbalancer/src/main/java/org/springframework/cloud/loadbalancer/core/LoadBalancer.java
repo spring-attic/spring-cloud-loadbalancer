@@ -21,6 +21,8 @@ package org.springframework.cloud.loadbalancer.core;
  */
 public interface LoadBalancer<T> {
 
+	Request REQUEST = new DefaultRequest();
+
 	/**
 	 * Response created for each request.
  	 */
@@ -36,14 +38,14 @@ public interface LoadBalancer<T> {
 		void onComplete(OnComplete onComplete);
 	}
 
-	interface Request {
-		//TODO: define contents
-	}
-
 	/**
 	 * Choose the next server based on the load balancing algorithm
 	 * @param request
 	 * @return
 	 */
 	Response<T> choose(Request request);
+
+	default Response<T> choose() {
+		return choose(REQUEST);
+	}
 }

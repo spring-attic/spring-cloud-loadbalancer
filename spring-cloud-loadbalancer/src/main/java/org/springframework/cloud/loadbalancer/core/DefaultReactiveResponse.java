@@ -16,38 +16,27 @@
 
 package org.springframework.cloud.loadbalancer.core;
 
+import org.springframework.cloud.client.ServiceInstance;
 import reactor.core.publisher.Mono;
 
 /**
  * @author Spencer Gibb
  */
-public interface ReactiveLoadBalancer<T> {
+class DefaultReactiveResponse implements ReactiveLoadBalancer.Response<ServiceInstance> {
 
-	Request REQUEST = new DefaultRequest();
+	private final ServiceInstance serviceInstance;
 
-	/**
-	 * Response created for each request.
- 	 */
-	interface Response<T> {
-		// boolean hasServer(); TODO: needed in reactive?
-
-		Mono<T> getServer();
-
-		/**
-		 * Notification that the request completed
-		 * @param onComplete
-		 */
-		Mono<Void> onComplete(OnComplete onComplete);
+	public DefaultReactiveResponse(ServiceInstance serviceInstance) {
+		this.serviceInstance = serviceInstance;
 	}
 
-	/**
-	 * Choose the next server based on the load balancing algorithm
-	 * @param request
-	 * @return
-	 */
-	Mono<Response<T>> select(Request request);
+	@Override
+	public Mono<ServiceInstance> getServer() {
+		return Mono.just(this.serviceInstance);
+	}
 
-	default Mono<Response<T>> select() { //conflicting name
-		return select(REQUEST);
+	@Override
+	public Mono<Void> onComplete(OnComplete onComplete) {
+		return Mono.empty(); //TODO: implement
 	}
 }

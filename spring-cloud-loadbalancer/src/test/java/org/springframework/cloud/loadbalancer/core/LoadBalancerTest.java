@@ -63,7 +63,9 @@ public class LoadBalancerTest {
 
 			ServiceInstance instance = response.getServer();
 			assertThat(instance).isNotNull();
-			assertThat(instance.getHost()).isEqualTo(host).as("instance host is incorrent %s", host);
+			assertThat(instance.getHost())
+					.as("instance host is incorrent %s", host)
+					.isEqualTo(host);
 
 			if (host.equals("b.host")) {
 				assertThat(instance.isSecure()).isTrue();

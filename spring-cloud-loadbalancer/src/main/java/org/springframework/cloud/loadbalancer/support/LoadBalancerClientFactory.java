@@ -16,9 +16,13 @@
 
 package org.springframework.cloud.loadbalancer.support;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.cloud.context.named.NamedContextFactory;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClientConfiguration;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClientSpecification;
-import org.springframework.cloud.context.named.NamedContextFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.env.Environment;
 
 /**
  * A factory that creates client, load balancer and client configuration instances. It
@@ -35,6 +39,26 @@ public class LoadBalancerClientFactory extends NamedContextFactory<LoadBalancerC
 
 	public LoadBalancerClientFactory() {
 		super(LoadBalancerClientConfiguration.class, NAMESPACE, PROPERTY_NAME);
+	}
+
+	public String getName(Environment environment) {
+		return environment.getProperty(PROPERTY_NAME);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getInstance(String name, ResolvableType type) {
+		AnnotationConfigApplicationContext context = getContext(name);
+		String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context,
+				type);
+		if (beanNames.length > 0) {
+			for (String beanName : beanNames) {
+				if (context.isTypeMatch(beanName, type)) {
+					return (T) context.getBean(beanName);
+				}
+			}
+			return null;
+		}
+		return null;
 	}
 
 }

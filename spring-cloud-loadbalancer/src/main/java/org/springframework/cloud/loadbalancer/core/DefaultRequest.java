@@ -19,6 +19,6 @@ package org.springframework.cloud.loadbalancer.core;
 /**
  * @author Spencer Gibb
  */
-class DefaultRequest implements LoadBalancer.Request {
+class DefaultRequest implements Request {
 
 }
